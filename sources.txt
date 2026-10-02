@@ -1,1 +1,4 @@
 src/Main.java
+src/channel/Channel.java
+src/channel/EmailChannel.java
+src/channel/SmsChannel.java
