@@ -1,0 +1,9 @@
+T1 PASS | Reminder + EmailChannel | result=EMAIL [Subject: Reminder; Body: Submit Assignment 3]
+T2 PASS | Reminder + SmsChannel | result=SMS: [Reminder] Submit Assignment 3
+T3 PASS | UrgentAlert + EmailChannel | result=EMAIL [Subject: URGENT; Body: Server is down]
+T4 PASS | UrgentAlert + SmsChannel | result=SMS: [URGENT] Server is down
+T5 PASS | Reminder: EmailChannel -> SmsChannel | sameObject=true | stateUnchanged=true
+    before=EMAIL [Subject: Reminder; Body: Submit Assignment 3] | after=SMS: [Reminder] Submit Assignment 3
+T6 PASS | Reminder + PushChannel | result=PUSH {title=Reminder, text=Submit Assignment 3}
+T7 PASS | UrgentAlert + PushChannel | result=PUSH {title=URGENT, text=Server is down}
+SUMMARY: 7/7 PASS
