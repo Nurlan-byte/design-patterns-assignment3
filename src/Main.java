@@ -35,6 +35,7 @@ public class Main {
         checkCombination("T2", new Reminder(REMINDER_ID, REMINDER_TEXT, sms), sms, EXPECTED_REMINDER_SMS);
         checkCombination("T3", new UrgentAlert(ALERT_ID, ALERT_TEXT, email), email, EXPECTED_ALERT_EMAIL);
         checkCombination("T4", new UrgentAlert(ALERT_ID, ALERT_TEXT, sms), sms, EXPECTED_ALERT_SMS);
+        checkRuntimeSwitch(email, sms, EXPECTED_REMINDER_EMAIL, EXPECTED_REMINDER_SMS);
 
         printSummary();
     }
@@ -44,6 +45,30 @@ public class Main {
         String actual = notification.execute();
         boolean success = actual.equals(expected);
         recordResult(checkId, success, classes + " | result=" + actual, expected);
+    }
+
+    private static void checkRuntimeSwitch(Channel first, Channel second, String expectedBefore, String expectedAfter) {
+        Notification notification = new Reminder(REMINDER_ID, REMINDER_TEXT, first);
+        Notification original = notification;
+        String idBefore = notification.getId();
+        String messageBefore = notification.getMessage();
+
+        String before = notification.execute();
+        notification.setImplementation(second);
+        String after = notification.execute();
+
+        boolean sameObject = original == notification;
+        boolean stateUnchanged = notification.getId().equals(idBefore)
+                && notification.getMessage().equals(messageBefore);
+        boolean resultsCorrect = before.equals(expectedBefore) && after.equals(expectedAfter);
+        boolean success = sameObject && stateUnchanged && resultsCorrect;
+
+        String classes = className(notification) + ": " + className(first) + " -> " + className(second);
+        String details = classes + " | sameObject=" + sameObject + " | stateUnchanged=" + stateUnchanged
+                + "\n    before=" + before + " | after=" + after;
+        String expected = "sameObject=true | stateUnchanged=true | before=" + expectedBefore + " | after="
+                + expectedAfter;
+        recordResult("T5", success, details, expected);
     }
 
     private static void recordResult(String checkId, boolean success, String details, String expected) {
